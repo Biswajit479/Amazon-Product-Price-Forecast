@@ -7,6 +7,7 @@ from utils.asin_extractor import extract_asin
 from utils.db import fetch_price_data
 from utils.preprocess import preprocess
 from utils.model import train_model, make_forecast, evaluate_prophet
+from utils.scraper import get_product_info
 
 st.set_page_config(page_title = "Amazon Price Forecast", layout = 'wide')
 
@@ -25,6 +26,22 @@ if st.button("predict Price"):
         st.stop()
         
     st.success(f"ASIN: {asin}")
+    
+    # Scarp prooduct info
+    title, image_url = get_product_info(url)
+    print("Function Called")
+    
+    # display product info
+    if title == "Error fetching prooduct":
+        st.warning("⚠️ Could not fetch product details (Amazon blocked request)")
+    else:
+        col1, col2 = st.columns([1,3])
+        
+        with col1:
+            if image_url:
+                st.image(image_url)
+        with col2:
+            st.markdown(f'### {title}')
     
     # Load data
     df = fetch_price_data(asin)
